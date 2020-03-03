@@ -1,0 +1,20 @@
+Read the HOW_TO_BUILD_SIM_FOR_WIN that is part of the brainstem package.
+
+to get current stuff:
+
+we need gcc8 or 9, not the current 5.5.0
+make update gcc9
+
+
+If you do not install MXE in /opt/mxe, you will have to edit some of the build
+files that are part of this package.
+
+When you build the static Windows library, it will be installed in the MXE
+area, not the standard Linux locations like /usr/local/lib/. The same is true for the include files. To install the headers, once everything is built, type:
+
+make -f Makefile_s64_static_winlib.qt install
+
+The headers and library for Windows builds are not installed as part of the
+package because only build systems need these.
+
+

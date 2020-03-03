@@ -1,0 +1,16 @@
+2019-12-02  dshuman@usf.edu
+
+	* configure.ac: Bump to 1.0.3. Needed to undefine UNICODE. Not the default 
+	in Linux, but appears to be the default in Windows. Caused run-time errors
+	in simrun.exe.
+
+2019-11-27  dshuman@usf.edu
+
+	* Makefile.am: left out a .h file to install in /usr/local/include that
+	some builds require.
+	* configure.ac: bump to 1.0.1
+	* s64_static_winlib.pro: To build debian pkg and include MXE build, need to 
+	put the include files in the /opt/mxe area. There really should be a -dev
+	package that does this. 
+	* configure.ac: bump to 1.0.2
+

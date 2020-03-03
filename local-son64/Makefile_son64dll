@@ -1,0 +1,296 @@
+#############################################################################
+# Makefile for building: libson64.dll
+# This was hand edited from qmake output using a .pro file. The process
+# refuses to use anything bug -std=c++11. The CED code requires -std=c++17
+# to build.
+#############################################################################
+
+MAKEFILE      = Makefile_son64dll
+
+EQ            = =
+
+####### Compiler, tools and options
+
+CC            = /opt/mxe/usr/bin/x86_64-w64-mingw32.static-gcc
+CXX           = /opt/mxe/usr/bin/x86_64-w64-mingw32.static-g++
+LINKER        = /opt/mxe/usr/bin/x86_64-w64-mingw32.static-g++
+DEFINES       = -DDLL_SON64 -DWIN64 -DMINGW_HAS_SECURE_API=1 -DVERSION=\"0.0.0\"
+DEFINES2      = -DWIN64 -DMINGW_HAS_SECURE_API=1 -DVERSION=\"0.0.0\"
+CFLAGS        = -pipe -fno-keep-inline-dllexport -O2 -w -ffunction-sections -fdata-sections $(DEFINES)
+CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -std=c++17 -w -ffunction-sections -fdata-sections -fexceptions -mthreads $(DEFINES)
+CXXFLAGS2      = -pipe -O2 -std=c++17 -w -mthreads $(DEFINES2)
+INCPATH       = -I.
+LFLAGS        = -Wl,-s -shared -Wl,--gc-sections -Wl,-subsystem,windows -mthreads -Wl,--out-implib,libson64.a
+#LFLAGS2        = -Wl,-s -shared -mthreads
+LFLAGS2        =  -mthreads -static 
+LIBS        = 
+
+ZIP           = 
+DEF_FILE      = 
+RES_FILE      = 
+COPY          = cp -f
+SED           = sed
+COPY_FILE     = cp -f
+COPY_DIR      = cp -f -R
+DEL_FILE      = rm -f
+DEL_DIR       = rmdir
+MOVE          = mv -f
+CHK_DIR_EXISTS= test -d
+MKDIR         = mkdir -p
+INSTALL_FILE    = install -m 644 -p
+INSTALL_PROGRAM = install -m 755 -p
+INSTALL_DIR     = cp -f -R
+
+####### Output directory
+
+OBJECTS_DIR = ./windll
+
+
+
+
+####### Files
+
+SOURCES = s3264.cpp \
+		    s32priv.cpp \
+    		s64blkmgr.cpp \
+    		s64chan.cpp \
+	    	s64dblk.cpp \
+    		s64event.cpp \
+	    	s64filt.cpp \
+    		s64head.cpp \
+	    	s64mark.cpp \
+    		s64ss.cpp \
+	    	s64st.cpp \
+    		s64wave.cpp \
+	    	s64xmark.cpp \
+    		son64.cpp 
+
+OBJECTS = $(OBJECTS_DIR)/s3264.o \
+		    $(OBJECTS_DIR)/s32priv.o \
+    		$(OBJECTS_DIR)/s64blkmgr.o \
+	    	$(OBJECTS_DIR)/s64chan.o \
+    		$(OBJECTS_DIR)/s64dblk.o \
+	    	$(OBJECTS_DIR)/s64event.o \
+    		$(OBJECTS_DIR)/s64filt.o \
+	    	$(OBJECTS_DIR)/s64head.o \
+    		$(OBJECTS_DIR)/s64mark.o \
+	    	$(OBJECTS_DIR)/s64ss.o \
+    		$(OBJECTS_DIR)/s64st.o \
+	    	$(OBJECTS_DIR)/s64wave.o \
+    		$(OBJECTS_DIR)/s64xmark.o \
+	    	$(OBJECTS_DIR)/son64.o
+
+
+DIST  =  s3264.h \
+		s32priv.h \
+		s64chan.h \
+		s64circ.h \
+		s64dblk.h \
+		s64doc.h \
+		s64filt.h \
+		s64.h \
+		s64iter.h \
+		s64priv.h \
+		s64range.h \
+		s64ss.h \
+		s64st.h \
+		s64witer.h \
+      s3264.cpp \
+		s32priv.cpp \
+		s64blkmgr.cpp \
+		s64chan.cpp \
+		s64dblk.cpp \
+		s64event.cpp \
+		s64filt.cpp \
+		s64head.cpp \
+		s64mark.cpp \
+		s64ss.cpp \
+		s64st.cpp \
+		s64wave.cpp \
+		s64xmark.cpp \
+		son64.cpp
+
+DESTDIR        =  #avoid trailing-slash linebreak
+TARGET         = libson64.dll
+DESTDIR_TARGET = libson64.dll
+
+####### Build rules
+
+first: all
+all: Makefile_son64dll  libson64.dll edt2spike2.exe
+
+edt2spike2.exe: edt2spike2.cpp $(OBJECTS_DIR)/edt2spike2.o libson64.dll
+	$(LINKER) $(LFLAGS2) -o edt2spike2.exe -L./ libson64.dll $(OBJECTS_DIR)/edt2spike2.o -lson64
+
+#	$(LINKER) $(LFLAGS2) -o edt2spike2.exe -L./ libson64.dll $(OBJECTS_DIR)/edt2spike2.o
+
+$(OBJECTS_DIR)/edt2spike2.o: edt2spike2.cpp
+	$(CXX) -c $(CXXFLAGS2) $(INCPATH) -o $(OBJECTS_DIR)/edt2spike2.o edt2spike2.cpp
+
+
+libson64.dll: $(OBJECTS) 
+	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
+
+clean: compiler_clean 
+	-$(DEL_FILE) $(OBJECTS_DIR)/s3264.o $(OBJECTS_DIR)/s32priv.o $(OBJECTS_DIR)/s64blkmgr.o $(OBJECTS_DIR)/s64chan.o $(OBJECTS_DIR)/s64dblk.o $(OBJECTS_DIR)/s64event.o $(OBJECTS_DIR)/s64filt.o $(OBJECTS_DIR)/s64head.o $(OBJECTS_DIR)/s64mark.o $(OBJECTS_DIR)/s64ss.o $(OBJECTS_DIR)/s64st.o $(OBJECTS_DIR)/s64wave.o $(OBJECTS_DIR)/s64xmark.o $(OBJECTS_DIR)/son64.o
+	-$(DEL_FILE) liblibson64.a
+
+distclean: clean 
+	-$(DEL_FILE)
+	-$(DEL_FILE) $(DESTDIR_TARGET)
+
+
+
+####### Compile
+
+$(OBJECTS_DIR)/s3264.o: s3264.cpp ../machine.h \
+		s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64filt.h \
+		s64iter.h \
+		s3264.h \
+		../son32/sonintl.h \
+		../son32/son.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s3264.o s3264.cpp
+
+$(OBJECTS_DIR)/s32priv.o: s32priv.cpp s32priv.h \
+		s64.h \
+		../son32/son.c \
+		../son32/son.h \
+		../machine.h \
+		../son32/sonintl.h \
+		s3264.h \
+		../son32/sonpriv.h \
+		s64filt.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s32priv.o s32priv.cpp
+
+$(OBJECTS_DIR)/s64blkmgr.o: s64blkmgr.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64blkmgr.o s64blkmgr.cpp
+
+$(OBJECTS_DIR)/s64chan.o: s64chan.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64chan.o s64chan.cpp
+
+$(OBJECTS_DIR)/s64dblk.o: s64dblk.cpp s64dblk.h \
+		s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64filt.h \
+		s64iter.h \
+		s64witer.h \
+		s64range.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64dblk.o s64dblk.cpp
+
+$(OBJECTS_DIR)/s64event.o: s64event.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64event.o s64event.cpp
+
+$(OBJECTS_DIR)/s64filt.o: s64filt.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64filt.o s64filt.cpp
+
+$(OBJECTS_DIR)/s64head.o: s64head.cpp s64priv.h \
+		s64.h \
+		s64ss.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64head.o s64head.cpp
+
+$(OBJECTS_DIR)/s64mark.o: s64mark.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64mark.o s64mark.cpp
+
+$(OBJECTS_DIR)/s64ss.o: s64ss.cpp s64priv.h \
+		s64.h \
+		s64ss.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64ss.o s64ss.cpp
+
+$(OBJECTS_DIR)/s64st.o: s64st.cpp s64st.h \
+		s64.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64st.o s64st.cpp
+
+$(OBJECTS_DIR)/s64wave.o: s64wave.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64wave.o s64wave.cpp
+
+$(OBJECTS_DIR)/s64xmark.o: s64xmark.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/s64xmark.o s64xmark.cpp
+
+$(OBJECTS_DIR)/son64.o: son64.cpp s64priv.h \
+		s64.h \
+		s64ss.h \
+		s64chan.h \
+		s64circ.h \
+		s64filt.h \
+		s64range.h \
+		s64iter.h \
+		s64st.h \
+		s64dblk.h \
+		s64witer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $(OBJECTS_DIR)/son64.o son64.cpp
+
+

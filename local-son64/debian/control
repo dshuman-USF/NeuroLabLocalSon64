@@ -1,0 +1,14 @@
+Source: local-son64
+Section: local
+Priority: extra
+Maintainer: dshuman <dshuman>
+Build-Depends: debhelper (>= 10),
+    libboost-dev
+Standards-Version: 4.1.2,
+Homepage:
+
+Package: local-son64
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: The CED open source son64 package for manipulationg .smr and .smrx files.
+
